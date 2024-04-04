@@ -1,0 +1,9 @@
+Old/**
+Latex/*.out
+Latex/*.log
+Latex/*.blg
+Latex/*.fls
+Latex/*.aux
+Latex/*.bbl
+Latex/*latexmk
+Latex/*.gz

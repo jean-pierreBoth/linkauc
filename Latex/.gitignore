@@ -1,0 +1,10 @@
+*.out
+*.log
+*.pdf
+*.blg
+*.fls
+*.aux
+*.bbl
+*latexmk
+*.gitignore~
+*.gz

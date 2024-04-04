@@ -1,0 +1,118 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%Link AUC manuscript%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass{article}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{authblk}
+\usepackage{numprint}
+%------------------------------------------------------------------------------
+%  syles defined in linkauc.sty
+\usepackage{linkauc}
+% ----------------------------------------------------------------------
+
+
+\bibliographystyle{abbrvnat}
+
+\title{A response to “Link prediction using low-dimensional node embeddings:
+The measurement problem”}
+\author[1,*]{Jean, Pierre Both}
+\author[2]{Jianshu Zhao}
+\affil[1]{Université Paris-Saclay, CEA, List, Palaiseau, France. (Retired)}
+\affil[2]{Center for Bioinformatics and Computational Genomics, Georgia Institute of Technology, Atlanta, Georgia, USA}
+\affil[*]{Corresponding author : jeanpierre.both@gmail.com} 
+
+\date{April 2024}
+
+\begin{document}
+
+\maketitle
+
+\section{Introduction}
+
+\citet{Menand} recently developed a new metric to evaluate link prediction task in graph representation learning, which is called $VCMPR@k$.
+They claimed that the widely used metric AUC (area under curve) is biased because low-dimensional vectors cannot capture sparse ground truth using dot product similarities, a standard practice in graph representation learning.
+It turns out that $VCMPR@k$ shows much lower values, less than 0.3 for many graphs while AUC are all 0.9 above. Although their theoretical framework and mathematical derivation are appealing and elegant, we argue that their method suffers from practical problems with respect to real-world network or graph structures.
+
+
+\section{Low value biasing}
+
+Here we analyze from a practical perspective and identify factors biasing $VMPCR@k$ to low values.
+First we recall that many real-world graphs,
+nodes degrees follow a power law .
+So even if the mean degree is in orders of tens, a large fraction of nodes may have degree much lower.
+(For example, the Blog catalog graph has mean degree 64.7 but 50\% of nodes have degree less than 21 and 25\% less than 8. In the high degree region 1\% of nodes have degrees above 700.
+A node that has no edge deleted contributes to 0 in the $VCPMR@k$ formula $ vcpmr_{i}(k)= \frac{t_{i}(k)}{\min(d_{i},k)}$. With an edge deletion probability $p$ of 0.2 on average, only nodes of degree greater or equal than 5 can contribute. For the Blog catalog graph, we can expect around 5\% of nodes contributes to 0 although there is no deleted edge to find (and in fact simulation shows it is 10\%).
+For the Amazon graph we can expect 50\% of nodes to do a zero contribution (simulation shows it is 40\%).
+In the same way: if the number of deleted edges is less than $min(d_{i},k)$, which is expected for $p \cdot d_{i} \leq k$, the score of a node will be less than 1 even if all edges are retrieved.
+If a large proportion of nodes satisfy $d_{i} \le k$ we should expect $vmpcr$ to be around $p$. (For example in the Amazon graph 90\% of nodes have degree less than 10, so we could expect a result of the order of 0.9*0.2+1.0 *0.1).\\
+
+We can try to estimate an upper bound for vmpcr supposing a uniform sampling of nodes as in the paper.
+We note $r_{i}$ the number of deleted edges incident to node i.
+On the set of nodes $\{i | d_{i} > k\}$ we have $ \nu_{i} = \frac{t_{i}}{k} $ and on the set $\{i | d_{i} \leq k\}$  we have  $ \nu_{i} = \frac{t_{i}}{d_{i}} \leq \frac{r_{i}}{d_{i}}$.
+On the average (conditionnally on the degree) we have $ r_{i} \leq p \cdot d_{i} $ . We introduce an integer $l$ and split the set $ \{ i | d_{i} > k  \}$ into  $ \{ i | l . k \ge d_{i} > k  \}$ and $ \{ i |  d_{i} > l \cdot k \}$. Now we get the following conditionally on degrees we have on the average
+\begin{itemize}
+    \item  on $\{i | d_{i} \leq k\}$ we have $ \nu_{i} \leq \frac{p . d_{i}}{d_{i}} = p$
+    \item on  $ \{ i | l . k > d_{i} > k  \}$ we have $ \nu_{i} = \frac{t_{i}}{k} \leq \frac{p.d_{i}}{k} \leq \frac{l.p.k}{k} = l \cdot p $ with probability $P(d_{i} \leq l \cdot k) - P(d_{i} \geq k)$
+    \item on $\{i| d_{i} > k \cdot l \}$  we have $ \nu_{i} \leq \frac{t_{i}}{k} \leq 1 $ with probability $ P(d_{i} > l \cdot k) $
+\end{itemize}
+
+We can thus expect $ vmpcr \leq p \cdot P(d_{i} \leq k) + p \cdot l \cdot P(l . k \geq d_{i} > k ) + P(d_{i} > l \cdot k)$.
+Plugging degrees quantiles of the Blog and Amazon graphs (they are given at  \href{https://github.com/jean-pierreBoth/LinkAuc}{\color{blue}Degrees})
+with $p=0.2, k=10$. For the Blog graph with $l=3$ we get $vmpcr \leq  0.2 \cdot 0.3 + 0.2 \cdot 3 \cdot 0.3 + (1.0-0.575) = 0.665$.
+For the Amazon graph with $l = 1$ we get $ vmpcr \leq 0.2 \cdot 0.925 + 0.2 \cdot 1 \cdot 0. + (1.0-0.875) \leq 0.32$.
+Alternatively a Julia script \href{https://github.com/jean-pierreBoth/LinkAuc/Degrees/e\_vmpcr.jl}{\color{blue}e\_vmpcr.jl} can compute expectations over quantiles degrees.
+
+\paragraph{}
+
+We tested  a modified version: $ \widetilde{vmpcr} = \frac{t_{i}(k)}{\min(r_{i}, d_{i}, k)}$ , for nodes with $ r_{i} > 0 $. For nodes with $ r_{i} = 0 $, we cannot store any contribution as there are no edge to retrieve.
+It makes the vmpcr larger but it is not yet comparable to AUC (as precision and AUC do not live in the same space) so we turned to the definition of a centric AUC.
+\section{A centric AUC}
+
+We let $i$ be a node, $d_{i}$ be the degree of node $i$, $r_{i}$ the number of deleted edges incident to $i$ , and $t_{i}(k)$ the number of true edges
+recovered up to k-th neighbour once sorted for node i, respectively. So, after edge deletion, a node $i$ has degree $d_{i} - r_{i}$.
+Given i we sort the n-1 edges by decreasing prediction of existence of a true edge between i and j.
+We have thus $ n - 1 - (d_{i} - r_{i})$  potential edges to test.We define $c_{j}$  as the number of true edges seen up to j.
+When exploring the j-th node in the sorted array and there are 2 possibilities:
+\begin{itemize}
+    \item j corresponds to a true (train edge), we increment $c_{j}$ by 1
+    \item j corresponds to a deleted edge. As our array is sorted, the probability that this edge has a higher
+          ranking than a random edge is just the ratio between the number of indexes greater than j that do not correspond
+          to a true edge already found and the number of potential edges. It is simply the ratio of potential edges after j to
+          the total number of potential edges $ \frac{n-j-(d_{i}-r_{i}(-c_{j}))}{n-1-(d_{i}-r_{i})}$
+\end{itemize}
+This defines our centric AUC at i.  Then we average over uniformly sampled nodes $i$ get a centric AUC.
+We tested this centric AUC with 2 embedding algorithms implemented in our software \href{https://github.com/jean-pierreBoth/graphembed}{\color{blue}graphembed}.
+The first is HOPE \citep{Cui} and relies on a SVD, and the second, called NodeSketch \citep{Yang}, relies on sketching. We also want to mentioned that the centric AUC works equally well for random-walk based graph embedding algorithms. 
+
+\subsection{Results}
+
+Results of some graph embeddings are given in Table 1 below. The Blog graph has a smaller centric AUC than the global AUC in each embedding but in a less pronounced way than that of \textit{vmpcr}. The Amazon and Dblp graph has a similar centric AUC with global AUC in each embedding.
+
+\begin{table}[t]
+    \caption{Embedding results and Auc}
+    \begin{tabular*}{\textwidth}[]{p{2.5cm}@{\extracolsep\fill}ccccccc}
+        \toprule
+        Graph &  Algo Parameters &  $\widetilde{vmpcr}$  &  Centric Auc &  Global Auc  \\
+        \midrule
+        \multicolumn{5}{l}{A. Sketching results. Parameters given in a triplet (dimension, nbhops, decay)}\\
+        Blog   & (1000,5,0.5) & $0.054 \pm \numprint{3.5E-3}$ & $0.681 \pm \numprint{5.9E-3} $ & 0.93 \\
+        Amazon & (1000,5,0.5) & $0.54 \pm \numprint{1.3E-2}$  & $0.961 \pm \numprint{4E-3}$    & $ 0.978 \pm \numprint{3.2E-4}$ \\
+        Dblp   & (1000,5,0.5) & $0.58 \pm \numprint{1.3E-2}$  & $0.918 \pm \numprint{6E-3}$    & $ 0.901 \pm \numprint{6.6E-4}$ \\
+        Dblp   & (400,4,0.4)  & $0.574 \pm \numprint{1.1E-2}$ & $0.94 \pm \numprint{5.1E-3}$   & $ 0.961 \pm \numprint{4.4E-4}$ \\
+        \midrule
+        \multicolumn{5}{l}{B. Hope embedding. Parameters given in a couple (dimension, nb iterations)}\\
+        Blog   & (400,5)      & $ 0.17 \pm \numprint{5.4E-3}$               & $0.698 \pm \numprint{7.4E-3}$  & 0.952 \\
+        Amazon & (400,5)      & $ \numprint{5.7E-2} \pm \numprint{6.3E-2}$  & $0.834 \pm \numprint{6.4E-3}$    & $ 0.856 \pm \numprint{9.1E-4}$ \\
+        \bottomrule
+    \end{tabular*}
+    \label{t:table2}\end{table}
+
+
+
+\section{Conclusion}
+The gap between $vcmp@k$ and AUC seems more related to the gap between precision and AUC than to its centric aspect. It must also be emphasized that computing a centric quality index by sampling only a limited number of nodes (a few thousands) due to the sorting cost of distances in large graphs is statistically difficult.
+
+\bibliography{bibliography}
+\end{document}

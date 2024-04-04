@@ -1,0 +1,48 @@
+% ---- Adjust page layout ----
+
+\usepackage{geometry}
+
+% Top margin
+\geometry{top=1in}
+
+% Bottom margin
+\geometry{bottom=1.2in}
+
+% Side margins
+\geometry{left=1.3in,right=1.3in}
+
+% Placement of page number
+\geometry{footskip=0.7in}
+
+% ---- Format tables & figures ----
+
+\usepackage{booktabs,graphicx}
+
+% Enable rotation of tables & figures
+\usepackage{rotating}
+
+% Enable  multiple rows in table
+\usepackage{multirow}
+
+% Center figures & tables
+\makeatletter\g@addto@macro\@floatboxreset\centering\makeatother
+
+% Create note for tables & figures
+\newcommand{\note}[2][]{\parbox{\textwidth}{\footnotesize\vspace*{10pt}\textit{#1}#2}}
+
+% Spacing in tables
+\renewcommand{\arraystretch}{1.1}
+
+
+% ---- Format bibliography ----
+
+\usepackage{natbib}
+
+% Author-year separation in citation
+\setcitestyle{aysep={}}
+
+% Spacing between references
+\setlength{\bibsep}{0pt}
+
+% Indentation of references
+\setlength{\bibhang}{\parindent}
