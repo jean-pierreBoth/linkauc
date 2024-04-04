@@ -1,6 +1,5 @@
 # Some comments on paper : Link prediction using low-dimensional node embeddings: The measurement problem
-See https://www.pnas.org/doi/10.1073/pnas.2312527121
-*vmpcr* wad defined like this:
+See https://www.pnas.org/doi/10.1073/pnas.2312527121, *vmpcr* wad defined like this:
 1. Delete a fraction of edges with a probability p (usually 0.2), the remaining edges are train edges.
 2. Do the embedding. Noting q_i (j) the prediction index for an edge between nodes i and j
 3. For each node i, we remove the index node j corresponding to train (kept) edges, sort all remaining  q_i (j) in the order such that prediction of edge between i and j is decreasing.  We note q_i this sorted array.
