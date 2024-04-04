@@ -14,6 +14,16 @@ using CSV
 # but we can compute nb removed as d*p + nbsigma * sigma. 
 # sigma in our case is sqrt(p * (1. - p) * degree)
 #
+# Usage:
+#  julia> in Julia interpreter :
+# include("e_vmcpr")
+# julia> e_vmcpr("amazon-degrees.csv", 10, 0.2)
+# we get 0.218
+# julia> e_vmcpr("amazon-degrees.csv", 10, 0.2, 2.)
+# we get 0.61557
+# So even if in each quantile the number of removed edges is at 2 sigma
+# above mean, the expected vmpcr is at 0.61
+#
 function e_vmcpr(degreefile, k, p, nbsigma::Float64=0.0)
     #
     @assert p < 1.0
