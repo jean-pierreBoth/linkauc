@@ -48,7 +48,7 @@ For the Amazon graph we can expect 50\% of nodes to do a zero contribution (simu
 In the same way: if the number of deleted edges is less than $min(d_{i},k)$, which is expected for $p \cdot d_{i} \leq k$, the score of a node will be less than 1 even if all edges are retrieved.
 If a large proportion of nodes satisfy $d_{i} \le k$ we should expect $vcmpr$ to be around $p$. (For example in the Amazon graph 90\% of nodes have degree less than 10, so we could expect a result of the order of 0.9*0.2+1.0 *0.1).\\
 
-We can try to estimate an upper bound for \textit{vcmpr} supposing a uniform sampling of nodes as in the paper.
+We can try to estimate an upper bound of the expectation of \textit{vcmpr} supposing a uniform sampling of nodes as in the paper.
 We note $r_{i}$ the number of deleted edge incidents to node i.
 On the set of nodes $\{i | d_{i} > k\}$ we have $ \nu_{i} = \frac{t_{i}}{k} $ and on the set $\{i | d_{i} \leq k\}$  we have  $ \nu_{i} = \frac{t_{i}}{d_{i}} \leq \frac{r_{i}}{d_{i}}$.
 On the average (depending on the degree) we have $ r_{i} \leq p \cdot d_{i} $ . We introduce an integer $l$ and split the set $ \{ i | d_{i} > k  \}$ into  $ \{ i | l . k \ge d_{i} > k  \}$ and $ \{ i |  d_{i} > l \cdot k \}$. Now we have the following conditional expectations:
