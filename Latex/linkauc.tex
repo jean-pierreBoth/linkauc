@@ -42,11 +42,12 @@ It turns out that $VCMPR@k$ shows much lower values, less than 0.3 for many grap
 Here we analyze from a practical perspective and identify factors biasing $vcmpr@k$ to low values.
 First we recall that many real-world graphs, nodes degrees follow a power law distribution.
 So even if the mean degree is in orders of tens, a large fraction of nodes may have degree much lower.
-(For example, the Blog catalog graph has mean degree 64.7 but 50\% of nodes have degree less than 21 and 25\% less than 8. In the high degree region 1\% of nodes have degrees above 700.
-A node that has no edge deleted contributes to 0 in the $VCMPR@k$ formula $ VCMPR_{i}(k)= \frac{t_{i}(k)}{\min(d_{i},k)}$. With an edge deletion probability $p$ of 0.2 on average, only nodes of degree greater or equal than 5 can contribute. For the Blog catalog graph, we can expect around 5\% of nodes contributes to 0 although there is no deleted edge to find (and in fact simulation shows it is 10\%).
-For the Amazon graph we can expect 50\% of nodes to do a zero contribution (simulation shows it is 40\%).
+For example, the Blog catalog graph has mean degree 64.7 but 50\% of nodes have degree less than 21 and 25\% less than 8. In the high degree region 1\% of nodes have degrees above 700. (Quantiles are given at  \href{https://github.com/jean-pierreBoth/linkauc/tree/master/Degrees}{\color{blue}Degrees}).
+A node that has no edge deleted contributes to 0 in the $VCMPR@k$ formula $ VCMPR_{i}(k)= \frac{t_{i}(k)}{\min(d_{i},k)}$. With an edge deletion probability $p$ of 0.2 on average, only nodes of degree greater or equal than 5 can contribute significantly. Precisely the binomial distribution implies that nodes of degree less than 4 will not contribute with probability at least 0.41. \\
+For the Blog catalog graph, we can expect around 5\% of nodes contributes to 0 although there is no deleted edge to find (simulation shows it is 10\%).
+For the Amazon graph we can expect 50\% of nodes to have zero contribution (simulation shows it is 40\%).
 In the same way: if the number of deleted edges is less than $min(d_{i},k)$, which is expected for $p \cdot d_{i} \leq k$, the score of a node will be less than 1 even if all edges are retrieved.
-If a large proportion of nodes satisfy $d_{i} \le k$ we should expect $vcmpr$ to be around $p$. (For example in the Amazon graph 90\% of nodes have degree less than 10, so we could expect a result of the order of 0.9*0.2+1.0 *0.1).\\
+If a large proportion of nodes satisfy $d_{i} \le k$ we should expect $vcmpr$ to be around $p$. (For example in the Amazon graph 90\% of nodes have degree less than 10, so we could expect a result at the order of 0.9*0.2+1.0 *0.1).\\
 
 We can try to estimate an upper bound of the expectation of \textit{vcmpr} supposing a uniform sampling of nodes as in the paper.
 We note $r_{i}$ the number of deleted edge incidents to node i.
@@ -59,7 +60,7 @@ On the average (depending on the degree) we have $ r_{i} \leq p \cdot d_{i} $ . 
 \end{itemize}
 
 We can thus expect $ vcmpr \leq p \cdot P(d_{i} \leq k) + p \cdot l \cdot P(l . k \geq d_{i} > k ) + P(d_{i} > l \cdot k)$.
-Plugging degrees quantiles of the Blog and Amazon graphs (they are given at  \href{https://github.com/jean-pierreBoth/linkauc/tree/master/Degrees}{\color{blue}Degrees})
+Plugging degrees quantiles of the Blog and Amazon graphs
 with $p=0.2, k=10$. For the Blog graph with $l=3$ we get $vcmpr \leq  0.2 \cdot 0.3 + 0.2 \cdot 3 \cdot 0.3 + (1.0-0.575) = 0.665$.
 For the Amazon graph with $l = 1$ we get $ vcmpr \leq 0.2 \cdot 0.925 + 0.2 \cdot 1 \cdot 0. + (1.0-0.875) \leq 0.32$.
 Alternatively a Julia script in \href{https://github.com/jean-pierreBoth/linkauc/tree/master/Degrees}{\color{blue}Degrees/e\_vcmpr.jl} can compute expectations over quantiles degrees.
@@ -75,7 +76,7 @@ We let $i$ be a node, $d_{i}$ be the degree of node $i$, $r_{i}$ the number of d
 recovered up to k-th neighbour once sorted for node i, respectively. So, after edge deletion, a node $i$ has degree $d_{i} - r_{i}$.
 Given a node $i$ we sort the n-1 edges by decreasing prediction of existence of a true edge between i and j.
 We have thus $ n - 1 - (d_{i} - r_{i})$  potential edges to test.We define $c_{j}$  as the number of true edges seen up to j.
-When exploring the j-th node in the sorted array and there are 2 possibilities:
+When exploring the j-th node in the sorted array there are 2 possibilities:
 \begin{itemize}
     \item j corresponds to a true (train edge), we increment $c_{j}$ by 1
     \item j corresponds to a deleted edge. As our array is sorted, the probability that this edge has a higher
@@ -83,7 +84,7 @@ When exploring the j-th node in the sorted array and there are 2 possibilities:
           to a true edge already found and the number of potential edges. It is simply the ratio of potential edges after j to
           the total number of potential edges $ \frac{n-j-(d_{i}-r_{i}(-c_{j}))}{n-1-(d_{i}-r_{i})}$
 \end{itemize}
-This defines our centric AUC at i.  Then we average over uniformly sampled nodes $i$ get a centric AUC.
+This defines our centric AUC at i.  Then we average over uniformly sampled nodes $i$ to get a centric AUC.
 We tested this centric AUC with 2 embedding algorithms implemented in our software \href{https://github.com/jean-pierreBoth/graphembed}{\color{blue}graphembed}.
 The first is HOPE \citep{Cui} and relies on a SVD, and the second, called NodeSketch \citep{Yang}, relies on sketching. We also want to mention that the centric AUC should work equally well for random-walk based graph embedding algorithms. 
 
@@ -93,19 +94,19 @@ Results of some graph embeddings are given in Table 1 below. The Blog graph has 
 
 \begin{table}[t]
     \caption{Embedding results and AUC}
-    \begin{tabular*}{\textwidth}[]{p{2.5cm}@{\extracolsep\fill}ccccccc}
+    \begin{tabular*}{\textwidth}[]{p{1.8cm}@{\extracolsep\fill}ccccccc}
         \toprule
-        Graph &  Algo Parameters &  $\widetilde{vcmpr}$  &  Centric Auc &  Global Auc  \\
+        Graph &  Algo Parameters &  $\widetilde{vcmpr}$  &  Centric AUC &  Global AUC  \\
         \midrule
-        \multicolumn{5}{l}{A. Sketching results. Parameters given in a triplet (dimension, nbhops, decay)}\\
-        Blog   & (1000,5,0.5) & $0.054 \pm \num{3.5E-3}$ & $0.681 \pm \num{5.9E-3} $ & 0.93 \\
-        Amazon & (1000,5,0.5) & $0.54 \pm \num{1.3E-2}$  & $0.961 \pm \num{4E-3}$    & $ 0.978 \pm \num{3.2E-4}$ \\
-        Dblp   & (1000,5,0.5) & $0.58 \pm \num{1.3E-2}$  & $0.918 \pm \num{6E-3}$    & $ 0.901 \pm \num{6.6E-4}$ \\
-        Dblp   & (400,4,0.4)  & $0.574 \pm \num{1.1E-2}$ & $0.94 \pm \num{5.1E-3}$   & $ 0.961 \pm \num{4.4E-4}$ \\
+        \multicolumn{5}{l}{A. Sketching results. Parameters given in a triplet: dimension, nbhops, decay}\\
+        Blog   & 1000,5,0.5 & $0.054 \pm \num{3.5E-3}$ & $0.681 \pm \num{5.9E-3} $ & 0.93 \\
+        Amazon & 1000,5,0.5 & $0.54 \pm \num{1.3E-2}$  & $0.961 \pm \num{4E-3}$    & $ 0.978 \pm \num{3.2E-4}$ \\
+        Dblp   & 1000,5,0.5 & $0.58 \pm \num{1.3E-2}$  & $0.918 \pm \num{6E-3}$    & $ 0.901 \pm \num{6.6E-4}$ \\
+        Dblp   & 400,4,0.4  & $0.574 \pm \num{1.1E-2}$ & $0.94 \pm \num{5.1E-3}$   & $ 0.961 \pm \num{4.4E-4}$ \\
         \midrule
         \multicolumn{5}{l}{B. Hope embedding. Parameters given in a couple (dimension, nb iterations)}\\
-        Blog   & (400,5)      & $ 0.17 \pm \num{5.4E-3}$               & $0.698 \pm \num{7.4E-3}$  & 0.952 \\
-        Amazon & (400,5)      & $ \num{5.7E-2} \pm \num{6.3E-2}$  & $0.834 \pm \numprint{6.4E-3}$    & $ 0.856 \pm \num{9.1E-4}$ \\
+        Blog   & 400,5      & $ 0.17 \pm \num{5.4E-3}$               & $0.698 \pm \num{7.4E-3}$  & 0.952 \\
+        Amazon & 400,5      & $ \num{5.7E-2} \pm \num{6.3E-2}$  & $0.834 \pm \numprint{6.4E-3}$    & $ 0.856 \pm \num{9.1E-4}$ \\
         \bottomrule
     \end{tabular*}
     \label{t:table2}\end{table}
