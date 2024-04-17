@@ -14,7 +14,6 @@
 % ----------------------------------------------------------------------
 
 
-%\bibliographystyle{abbrvnat}
 \bibliographystyle{pnas2009}
 
 \title{Link prediction: A centric precision or a centric AUC measure?}
@@ -32,7 +31,7 @@
 
 \section{Introduction}
 
-\cite{Menand2024link} recently developed the new metric $VCMPR@k$, to evaluate link prediction task in graph representation learning.
+Menand and al. \cite{Menand2024link} recently developed the new metric $VCMPR@k$, to evaluate link prediction task in graph representation learning.
 They claimed that the AUC metric using dot product similarities surestimates the embedding quality measures.
 Here we identify factors biasing $VCMPR@k$ to low values.
 
@@ -47,23 +46,8 @@ For the Amazon graph, degrees quantiles show we can expect 50\% of nodes to have
 Degrees quantiles for the Blog and Amazon graph are given at \href{https://github.com/jean-pierreBoth/linkauc/tree/master/Degrees}{\color{blue}Degrees}).
 In the same way: if the number of deleted edges is less than $min(d_{i},k)$, which is expected for $p \cdot d_{i} \leq k$, the score of a node will be less than 1 even if all edges are retrieved.
 If a large proportion of nodes satisfy $d_{i} \le k$ we should expect $vcmpr$ to be around $p$. For example in the Amazon graph 90\% of nodes have degree less than 10.\\
-
-We can try to estimate an upper bound of the expectation of \textit{vcmpr} supposing a uniform sampling of nodes as in the paper.
-We note $r_{i}$ the number of deleted edge incidents to node i.
-On the set of nodes $\{i | d_{i} > k\}$ we have $ \nu_{i} = \frac{t_{i}}{k} $ and on the set $\{i | d_{i} \leq k\}$  we have  $ \nu_{i} = \frac{t_{i}}{d_{i}} \leq \frac{r_{i}}{d_{i}}$.
-On the average (depending on the degree) we have $ r_{i} \leq p \cdot d_{i} $ . We introduce an integer $l$ and split the set $ \{ i | d_{i} > k  \}$ into  $ \{ i | l . k \ge d_{i} > k  \}$ and $ \{ i |  d_{i} > l \cdot k \}$. Now we have the following conditional expectations:
-\begin{itemize}
-    \item  on $\{i | d_{i} \leq k\}$ we have $ \nu_{i} \leq \frac{p . d_{i}}{d_{i}} = p$
-    \item on  $ \{ i | l . k > d_{i} > k  \}$ we have $ \nu_{i} = \frac{t_{i}}{k} \leq \frac{p.d_{i}}{k} \leq \frac{l.p.k}{k} = l \cdot p $ with probability $P(d_{i} \leq l \cdot k) - P(d_{i} \geq k)$
-    \item on $\{i| d_{i} > k \cdot l \}$  we have $ \nu_{i} \leq \frac{t_{i}}{k} \leq 1 $ with probability $ P(d_{i} > l \cdot k) $
-\end{itemize}
-
-We can thus expect $ vcmpr \leq p \cdot P(d_{i} \leq k) + p \cdot l \cdot P(l . k \geq d_{i} > k ) + P(d_{i} > l \cdot k)$.
-We can use these formula with $p=0.2, k=10$ in graphs degrees quantiles.
-For the Amazon graph with $l = 1$ we get $ vcmpr \leq 0.2 \cdot 0.925 + 0.2 \cdot 1 \cdot 0. + (1.0-0.875) \leq 0.32$.
-For the Blog graph with $l=3$ we get $vcmpr \le 0.665$.
+More apriori estimations can be found on a detailed version of this note \href{https://github.com/jean-pierreBoth/linkauc/tree/master/Latex}{\color{blue}linkauc-long.tex}
 Alternatively a Julia script in \href{https://github.com/jean-pierreBoth/linkauc/tree/master/Degrees}{\color{blue}Degrees/e\_vcmpr.jl} can compute expectations over quantiles degrees.
-
 To avoid the problem of degree distribution we propose the following new metric.
 
 \section{A centric AUC}
