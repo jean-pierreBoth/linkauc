@@ -7,3 +7,5 @@ Latex/*.aux
 Latex/*.bbl
 Latex/*latexmk
 Latex/*.gz
+*.doc*
+*.pdf
