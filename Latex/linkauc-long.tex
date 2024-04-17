@@ -71,11 +71,10 @@ We proposed a modified version of \textit{vcmpr}: $ \widetilde{vcmpr} = \frac{t_
 This version of \textit{vcmpr} is larger than the orignal \textit{vcmpr}. However, it is not yet comparable to AUC as precision and AUC do not live in the same space. Therefore, we propose the following new metric.
 
 \section{A new metric: centric AUC}
-
-We let $i$ be a node, $d_{i}$ be the degree of node $i$, $r_{i}$ the number of deleted edges incident to $i$ , and $t_{i}(k)$ the number of true edges
-recovered up to k-th neighbour once sorted for node i, respectively. So, after edge deletion, a node $i$ has degree $d_{i} - r_{i}$.
+We let $i$ be a node, $d_{i}$ be its degree, $r_{i}$ the number of deleted edges incident to $i$.
+So, after edge deletion, a node $i$ has degree $d_{i} - r_{i}$ and we have  $ n - 1 - (d_{i} - r_{i})$  potential edges to test
 Given a node $i$ we sort the n-1 edges by decreasing prediction of existence of a true edge between i and j.
-We have thus $ n - 1 - (d_{i} - r_{i})$  potential edges to test.We define $c_{j}$  as the number of true edges seen up to j.
+We define $c_{j}$  as the number of true edges seen up to j.
 When exploring the j-th node in the sorted array there are 2 possibilities:
 \begin{itemize}
     \item j corresponds to a true (train edge), we increment $c_{j}$ by 1
@@ -84,9 +83,9 @@ When exploring the j-th node in the sorted array there are 2 possibilities:
           to a true edge already found and the number of potential edges. It is simply the ratio of potential edges after j to
           the total number of potential edges $ \frac{n-j-(d_{i}-r_{i}(-c_{j}))}{n-1-(d_{i}-r_{i})}$
 \end{itemize}
-This defines our centric AUC at i.  Then we average over uniformly sampled nodes $i$ to get a centric AUC.
+Averaging over j,this defines our centric AUC at i.  Then we average over uniformly sampled nodes $i$ to get a centric AUC.
 We tested this centric AUC with 2 embedding algorithms implemented in our software \href{https://github.com/jean-pierreBoth/graphembed}{\color{blue}graphembed}.
-The first is HOPE \citep{Cui} and relies on a SVD, and the second, called NodeSketch \citep{Yang}, relies on sketching. We also want to mention that the centric AUC should work equally well for random-walk based graph embedding algorithms. 
+The first is HOPE \citep{Cui} and relies on a SVD, and the second, called NodeSketch \citep{Yang}, relies on sketching. We also want to mention that the centric AUC should work equally well for random-walk based graph embedding algorithms.
 
 \subsection{Results}
 
