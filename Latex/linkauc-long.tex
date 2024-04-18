@@ -39,7 +39,7 @@ It turns out that $VCMPR@k$ shows much lower values, less than 0.3 for many grap
 
 \section{Low value bias of VCMPR@k}
 
-Here we analyze from a practical perspective and identify factors biasing $vcmpr@k$ to low values.
+Here we identify from a practical perspective factors biasing $vcmpr@k$ to low values.
 First we recall that many real-world graphs, nodes degrees follow a power law distribution.
 So even if the mean degree is in orders of tens, a large fraction of nodes may have degree much lower.
 For example, the Blog catalog graph has mean degree 64.7 but 50\% of nodes have degree less than 21 and 25\% less than 8. In the high degree region 1\% of nodes have degrees above 700. (Quantiles are given at  \href{https://github.com/jean-pierreBoth/linkauc/tree/master/Degrees}{\color{blue}Degrees}).
@@ -68,7 +68,8 @@ Alternatively a Julia script in \href{https://github.com/jean-pierreBoth/linkauc
 \paragraph{}
 
 We proposed a modified version of \textit{vcmpr}: $ \widetilde{vcmpr} = \frac{t_{i}(k)}{\min(r_{i}, d_{i}, k)}$ , for nodes with $ r_{i} > 0 $. For nodes with $ r_{i} = 0 $, they cannot contribute to $\widetilde{vcmpr}$  as there are no edges to retrieve.
-This version of \textit{vcmpr} is larger than the orignal \textit{vcmpr}. However, it is not yet comparable to AUC as precision and AUC do not live in the same space. Therefore, we propose the following new metric.
+This version of \textit{vcmpr} is larger than the orignal \textit{vcmpr}. However, it is not yet comparable to AUC as it fixes only the problem of nodes with no edge deleted.
+precision. Therefore, we propose the following new metric.
 
 \section{A new metric: centric AUC}
 We let $i$ be a node, $d_{i}$ be its degree, $r_{i}$ the number of deleted edges incident to $i$.
@@ -83,9 +84,9 @@ When exploring the j-th node in the sorted array there are 2 possibilities:
           to a true edge already found and the number of potential edges. It is simply the ratio of potential edges after j to
           the total number of potential edges $ \frac{n-j-(d_{i}-r_{i}(-c_{j}))}{n-1-(d_{i}-r_{i})}$
 \end{itemize}
-Averaging over j,this defines our centric AUC at i.  Then we average over uniformly sampled nodes $i$ to get a centric AUC.
+Averaging over j,this defines our centric AUC at i.  Averaging over uniformly sampled nodes $i$ to get a centric AUC.
 We tested this centric AUC with 2 embedding algorithms implemented in our software \href{https://github.com/jean-pierreBoth/graphembed}{\color{blue}graphembed}.
-The first is HOPE \citep{Cui} and relies on a SVD, and the second, called NodeSketch \citep{Yang}, relies on sketching. We also want to mention that the centric AUC should work equally well for random-walk based graph embedding algorithms.
+The first is HOPE \citep{Cui} and relies on a SVD, and the second, called NodeSketch \citep{Yang}, relies on sketching. Centric AUC should work equally well for other graph embedding algorithms.
 
 \subsection{Results}
 
