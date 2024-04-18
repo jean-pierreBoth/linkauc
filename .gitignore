@@ -8,3 +8,4 @@ Latex/*.bbl
 Latex/*latexmk
 Latex/*.gz
 *.doc*
+README.pdf
