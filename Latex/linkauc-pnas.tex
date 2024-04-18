@@ -37,7 +37,7 @@ Here we identify factors biasing $VCMPR@k$ to low values.
 
 
 \section{Low value bias of VCMPR@k}
-As many for real-world graphs, nodes degrees follow a power law distribution, a large fraction of nodes may have degree much lower than the mean degree.
+For many real-world graphs, nodes degrees follow a power law distribution, a large fraction of nodes may have degree much lower than the mean degree.
 This impacts the $VCMPR@k$ formula $ VCMPR_{i}(k)= \frac{t_{i}(k)}{\min(d_{i},k)}$ as a node with no incident edge deleted contributes to 0 in the $VCMPR@k$ formula.
 
 With an edge deletion probability $p$ of 0.2, on average only nodes of degree greater or equal than 5 can contribute significantly. Precisely the binomial distribution implies that nodes of degree less than 4 will contribute 0 with probability at least 0.41.
@@ -45,13 +45,13 @@ For the Amazon graph, degrees quantiles show we can expect 50\% of nodes to have
 Degrees quantiles for the Blog and Amazon graph are given at \href{https://github.com/jean-pierreBoth/linkauc/tree/master/Degrees}{\color{blue}Degrees}.
 In the same way: if the number of deleted edges is less than $min(d_{i},k)$, which is expected for $p \cdot d_{i} \leq k$, the score of a node will be less than 1 even if all edges are retrieved.
 If a large proportion of nodes satisfy $d_{i} \le k$ we should expect $vcmpr$ to be around $p$. For example in the Amazon graph 90\% of nodes have degree less than 10.\\
-More explanations with equations can be found on a detailed version of this note at \href{https://github.com/jean-pierreBoth/linkauc/tree/master/Latex}{\color{blue}linkauc-long.pdf}
+More explanations with equations can be found in a detailed version of this note at \href{https://github.com/jean-pierreBoth/linkauc/tree/master/Latex}{\color{blue}linkauc-long.pdf}
 Alternatively a Julia script in \href{https://github.com/jean-pierreBoth/linkauc/tree/master/Degrees}{\color{blue}Degrees/e\_vcmpr.jl} can compute expectations over quantiles degrees.
 To avoid the problem of degree distribution we propose the following new metric.
 
 \section{A centric AUC}
 
-We let $i$ be a node, $d_{i}$ be its degree, $r_{i}$ the number of deleted edges incident to $i$.
+Let $i$ be a node, $d_{i}$ be its degree, $r_{i}$ the number of deleted edges incident to $i$.
 After edge deletion, a node $i$ has degree $d_{i} - r_{i}$ and we have  $ n - 1 - (d_{i} - r_{i})$  potential edges to test
 Given a node $i$ we sort the n-1 edges by decreasing prediction of existence of a true edge between i and j. We define $c_{j}$  as the number of true edges seen up to j.
 When exploring the j-th node there are 2 possibilities:
