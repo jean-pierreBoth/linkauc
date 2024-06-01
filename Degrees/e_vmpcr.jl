@@ -1,5 +1,6 @@
 using DataFrames
 using CSV
+using Printf
 
 # This function returns expected vmpcr@k given degrees quantiles in a csv file as extracted from graphembed.
 # (Cf https://github.com/jean-pierreBoth/graphembed)
@@ -16,13 +17,19 @@ using CSV
 #
 # Usage:
 #  julia> in Julia interpreter :
-# include("e_vmcpr")
+# include("e_vmpcr.jl")
 # julia> e_vmcpr("amazon-degrees.csv", 10, 0.2)
-# we get 0.218
-# julia> e_vmcpr("amazon-degrees.csv", 10, 0.2, 2.)
-# we get 0.61557
-# So even if in each quantile the number of removed edges is at 2 sigma
-# above mean, the expected vmpcr is at 0.61
+# we get 0.263
+# julia> e_vmcpr("amazon-degrees.csv", 10, 0.2, 1.)
+# we get 0.6908
+# So even if in each quantile the number of removed edges is at 1 sigma
+# above mean, the expected vmpcr is under 0.691
+# 
+# For the blog Catalog graph we get 
+# julia> e_vmcpr("blog-degree.csv", 10, 0.2)
+# we get  0.566
+# julia> e_vmcpr("blog-degree.csv", 10, 0.2, 1.)
+# we get  0.74
 #
 function e_vmcpr(degreefile, k, p, nbsigma::Float64=0.0)
     #
@@ -43,17 +50,16 @@ function e_vmcpr(degreefile, k, p, nbsigma::Float64=0.0)
         mean_degree += proba * di
         sigma = sqrt(p * (1.0 - p) * di)
         # removed edge is compute as mean + nbsigma sigma to get upper bounds
-        removed = p * di + sigma * nbsigma
-        if di <= k
-            esp += proba * removed / di
-        elseif di <= k / p    # k > di
-            esp += proba * removed / k
+        removed = min(di, p * di + sigma * nbsigma)
+        di_remain = di - removed
+        if di_remain <= k
+            esp += proba *  min(k, removed) / di_remain
         else
             esp += proba * min(k, removed) / k
-            #            esp += proba
         end
     end
-    println("mean degree : ", mean_degree)
-    println("expected  vmpcr(under mean removed number of edges) : ", esp)
+    @printf("mean degree : %.3f", mean_degree)
+    println()
+    @printf("expected  vmpcr(under mean removed number of edges) : %.3f \n", esp)
     return esp
 end
