@@ -39,35 +39,46 @@ It turns out that $VCMPR@k$ shows much lower values, less than 0.3 for many grap
 
 \section{Low value bias of VCMPR@k}
 
+$VCMPR@k$ is defined as the mean over nodes i of  $ VCMPR_{i}(k)= \frac{t_{i}(k)}{\min(d_{i}^{r},k)}$ with $ d_{i}^{r} $ being the degree after edge deletion.
 Here we identify from a practical perspective factors biasing $vcmpr@k$ to low values.
 First we recall that many real-world graphs, nodes degrees follow a power law distribution.
 So even if the mean degree is in orders of tens, a large fraction of nodes may have degree much lower.
-For example, the Blog catalog graph has mean degree 64.7 but 50\% of nodes have degree less than 21 and 25\% less than 8. In the high degree region 1\% of nodes have degrees above 700. (Quantiles are given at  \href{https://github.com/jean-pierreBoth/linkauc/tree/master/Degrees}{\color{blue}Degrees}).
-A node with no incident edge deleted contributes to 0 in the $VCMPR@k$ formula $ VCMPR_{i}(k)= \frac{t_{i}(k)}{\min(d_{i},k)}$. With an edge deletion probability $p$ of 0.2 on average, only nodes of degree greater or equal than 5 can contribute significantly. Precisely the binomial distribution implies that nodes of degree less than 4 will contribute 0 with probability at least 0.41. \\
+
+For example, the Blog catalog graph has mean degree 64.7 but 50\% of nodes have degree less than 21 and 25\% less than 8.
+In the high degree region 1\% of nodes have degrees above 700. (Quantiles are given at  \href{https://github.com/jean-pierreBoth/linkauc/tree/master/Degrees}{\color{blue}Degrees}).
+This impacts the quantity $ VCMPR_{i}(k)$ as a node with no incident edge deleted contributes to 0 in the $VCMPR@k$ formula.
+
+With an edge deletion probability $p$ of 0.2 on average, only nodes of degree greater or equal than 5 can contribute significantly.
+Precisely the binomial distribution implies that nodes of degree less than 4 will contribute 0 with probability at least 0.41. \\
 For the Blog catalog graph, we can expect around 5\% of nodes contributes to 0 although there is no deleted edge to find (simulation shows it is 10\%).
 For the Amazon graph we can expect 50\% of nodes to have zero contribution (simulation shows it is 40\%).
-In the same way: if the number of deleted edges is less than $min(d_{i},k)$, which is expected for $p \cdot d_{i} \leq k$, the score of a node will be less than 1 even if all edges are retrieved.
-If a large proportion of nodes satisfy $d_{i} \le k$ we should expect $vcmpr$ to be around $p$. (For example in the Amazon graph 90\% of nodes have degree less than 10, so we could expect a result at the order of 0.9*0.2+1.0 *0.1).\\
+
+In the same way: if a large fraction of nodes satisfy $ d_{i}(1-p) \leq k$, the score of a node will be around
+$\frac{p \cdot d_{i}}{(1- p) \cdot d_{i}} = \frac{p}{1-p}$ even if all edges are retrieved.
+(For example in the Amazon graph 92\% of nodes have degree less than 12, so we could expect a result less than (0.92*0.2/0.8)+1.0 *0.08 = 0.31).\\
 
 We can try to estimate an upper bound of the expectation of \textit{vcmpr} supposing a uniform sampling of nodes as in the paper.
 We note $r_{i}$ the number of deleted edge incidents to node i.
-On the set of nodes $\{i | d_{i} > k\}$ we have $ \nu_{i} = \frac{t_{i}}{k} $ and on the set $\{i | d_{i} \leq k\}$  we have  $ \nu_{i} = \frac{t_{i}}{d_{i}} \leq \frac{r_{i}}{d_{i}}$.
-On the average (depending on the degree) we have $ r_{i} \leq p \cdot d_{i} $ . We introduce an integer $l$ and split the set $ \{ i | d_{i} > k  \}$ into  $ \{ i | l . k \ge d_{i} > k  \}$ and $ \{ i |  d_{i} > l \cdot k \}$. Now we have the following conditional expectations:
+On the set of nodes $\{i | (1-p) d_{i} > k\}$ we have $ \nu_{i} = \frac{t_{i}}{k} $ and on the set $\{i |(1-p) d_{i} \leq k\}$  we have  $ \nu_{i} = \frac{t_{i}}{(1-p) d_{i}} \leq \frac{r_{i}}{d_{i}}$.
+On the average (depending on the degree) we have $ r_{i} \leq p \cdot d_{i} $ . We introduce an integer $l$ and split the set $ \{ i | (1-p) d_{i} > k  \}$ into  $ \{ i | l . k \ge (1-p) d_{i} > k  \}$ and $ \{ i | (1-p) d_{i} > l \cdot k \}$. Now we have the following conditional expectations:
 \begin{itemize}
-    \item  on $\{i | d_{i} \leq k\}$ we have $ \nu_{i} \leq \frac{p . d_{i}}{d_{i}} = p$
-    \item on  $ \{ i | l . k > d_{i} > k  \}$ we have $ \nu_{i} = \frac{t_{i}}{k} \leq \frac{p.d_{i}}{k} \leq \frac{l.p.k}{k} = l \cdot p $ with probability $P(d_{i} \leq l \cdot k) - P(d_{i} \geq k)$
-    \item on $\{i| d_{i} > k \cdot l \}$  we have $ \nu_{i} \leq \frac{t_{i}}{k} \leq 1 $ with probability $ P(d_{i} > l \cdot k) $
+    \item  on $\{i | (1-p) d_{i} \leq k\}$ we have $ \nu_{i} \leq \frac{p . d_{i}}{(1-p) d_{i}} = \frac{p}{1-p}$
+    \item on  $ \{ i | l . k > (1-p) d_{i} > k  \}$ we have $ \nu_{i} = \frac{t_{i}}{k} \leq \frac{p.d_{i}}{k} \leq \frac{l.p.k}{(1-p) k} = l \cdot \frac{p}{1-p} $
+          with probability $P(d_{i} \leq \frac{l \cdot k}{1-p}) - P(d_{i} \geq \frac{k}{1-p})$
+    \item on $\{i| (1-p) d_{i} > k \cdot l \}$  we have $ \nu_{i} \leq \frac{t_{i}}{k} \leq 1 $ with probability $ P(d_{i} > \frac{l \cdot k}{1-p}) $
 \end{itemize}
 
-We can thus expect $ vcmpr \leq p \cdot P(d_{i} \leq k) + p \cdot l \cdot P(l . k \geq d_{i} > k ) + P(d_{i} > l \cdot k)$.
+We can thus expect :
+$$ vcmpr \leq \frac{p}{1-p} \cdot P(d_{i} \leq \frac{k}{1-p}) + \frac{p \cdot l}{1-p}  \cdot P(\frac{l . k}{1-p} \geq d_{i} > \frac{k}{1-p} ) + P(d_{i} > \frac{l \cdot k}{1-p})$$.
+
 Plugging degrees quantiles of the Blog and Amazon graphs
-with $p=0.2, k=10$. For the Blog graph with $l=3$ we get $vcmpr \leq  0.2 \cdot 0.3 + 0.2 \cdot 3 \cdot 0.3 + (1.0-0.575) = 0.665$.
-For the Amazon graph with $l = 1$ we get $ vcmpr \leq 0.2 \cdot 0.925 + 0.2 \cdot 1 \cdot 0. + (1.0-0.875) \leq 0.32$.
+with $p=0.2, k=10$. For the Blog graph with $l=3$ we get $vcmpr \leq  0.25 \cdot 0.35 + 0.25 \cdot 3 \cdot (0.65-0.35) + (1.0-0.65) = 0.6625$.
+For the Amazon graph with $l = 1$ we get $ vcmpr \leq 0.25 \cdot 0.925 + 0.25 \cdot 1 \cdot 0. + (1.0-0.925) \leq 0.306$.
 Alternatively a Julia script in \href{https://github.com/jean-pierreBoth/linkauc/tree/master/Degrees}{\color{blue}Degrees/e\_vcmpr.jl} can compute expectations over quantiles degrees.
 
 \paragraph{}
 
-We proposed a modified version of \textit{vcmpr}: $ \widetilde{vcmpr} = \frac{t_{i}(k)}{\min(r_{i}, d_{i}, k)}$ , for nodes with $ r_{i} > 0 $. For nodes with $ r_{i} = 0 $, they cannot contribute to $\widetilde{vcmpr}$  as there are no edges to retrieve.
+We proposed a modified version of \textit{vcmpr}: $ \widetilde{vcmpr} = \frac{t_{i}(k)}{\min(r_{i}, d_{i} - r_{i}, k)}$ , for nodes with $ r_{i} > 0 $. For nodes with $ r_{i} = 0 $, they cannot contribute to $\widetilde{vcmpr}$  as there are no edges to retrieve.
 This version of \textit{vcmpr} is larger than the orignal \textit{vcmpr}. However, it is not yet comparable to AUC as it fixes only the problem of nodes with no edge deleted.
 precision. Therefore, we propose the following new metric.
 
