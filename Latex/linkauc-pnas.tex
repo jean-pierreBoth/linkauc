@@ -33,23 +33,27 @@
 
 Menand and al. \cite{Menand2024link} recently developed the new metric $VCMPR@k$, to evaluate link prediction task in graph representation learning.
 They claimed that the usual AUC metric embedding quality measurement is biased.
-Here we identify factors biasing $VCMPR@k$ to low values.
+Here we we point to some problems in the  $VCMPR@k$ definition.
 
 
 \section{Low value bias of VCMPR@k}
-$VCMPR@k$ is defined as the mean over nodes i of  $ VCMPR_{i}(k)= \frac{t_{i}(k)}{\min(d_{i}^{r},k)}$ with $ d_{i}^{r} $ being the degree after edge deletion.
+$VCMPR@k$ is defined as the mean over nodes i of  $ VCMPR_{i}(k)= \frac{t_{i}(k)}{\min(r_{i},k)}$ with $ r_{i} $ is the number of edges deleted from the test graph to the train graph.
 For many real-world graphs, nodes degrees follow a power law distribution, a large fraction of nodes may have degree much lower than the mean degree.
-This impacts the quantity $ VCMPR_{i}(k)$ as a node with no incident edge deleted contributes to 0 in the $VCMPR@k$ formula.
+This impacts the quantity $ VCMPR_{i}(k)$ as a node with no incident edge deleted cannot contribute to $VCMPR@k$.
 
-With an edge deletion probability $p$ of 0.2, on average only nodes of degree greater or equal than 5 can contribute significantly. Precisely the binomial distribution implies that nodes of degree less than 4 will contribute 0 with probability at least 0.41.
-For the Amazon graph, degrees quantiles show we can expect 50\% of nodes to have zero contribution (simulation shows it is 40\%).
-Degrees quantiles for some graphs are given at \href{https://github.com/jean-pierreBoth/linkauc/tree/master/Degrees}{\color{blue}Degrees}.
-Furthermore: After edge deletion we expect $ d_{i}^{r} = (1 - p) d_{i} $.
-If for a large proportion of nodes we have $ d_{i} \cdot (1 - p) \leq k $ we expect $vcmpr$ to be less
-than  $\frac{p \cdot d_{i}}{(1- p) \cdot d_{i}} = \frac{p}{1-p}$.
-For the Amazon graph where 92\% of nodes have degree less than 10/0.8 so we expect $vcmpr \approx 0.25$.
-Alternatively a Julia script in \href{https://github.com/jean-pierreBoth/linkauc/tree/master/Degrees}{\color{blue}Degrees/e\_vcmpr.jl} can compute expectations over quantiles degrees and confirms estimation.
-To avoid the problem of degree distribution we propose the following metric.
+With an edge deletion probability $p$ of 0.2, on average only nodes of degree greater or equal than 5 can contribute.
+Precisely the binomial distribution implies that nodes of degree less than 4 will contribute 0 with probability at least 0.41.
+For the Blog graph,  degrees quantiles of the Blog and Amazon graph show we can expect around 10\% of nodes to have zero contribution for the first graph,
+and around 50\% for the second.
+Degrees quantiles for some graphs are given at \href{https://github.com/jean-pierreBoth/linkauc/tree/master/Degrees}{\color{blue}Degrees}
+and a Julia script in \href{https://github.com/jean-pierreBoth/linkauc/tree/master/Degrees}{\color{blue}Degrees/e\_vcmpr.jl}
+computes expectations over quantiles degrees and shows we have 12\% of nodes that do not contribute for the Blog graph and 39\% for the Amazon graph.
+
+A related question concerns the sampling of nodes to compute $VCMPR@k$. Edge deletion impact preferentially higher degrees nodes.
+So should we not sample nodes according to their degrees. Our tests showed that for the Blog graph non uniform sampling makes
+$VCMPR@k$ go from 0.05 to 0.11 in our NodeSketch \citep{Yang2019nodesketch} implementation and had no impact on the Amazon graph.
+In these cases the impact is small but leaves some questions open .
+Inspired by the paper we propose the following metric.
 
 \section{A centric AUC}
 
