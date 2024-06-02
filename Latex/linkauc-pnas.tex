@@ -36,8 +36,8 @@ They claimed that the usual AUC metric embedding quality measurement is biased.
 Here we we point to some problems in the  $VCMPR@k$ definition.
 
 
-\section{Low value bias of VCMPR@k}
-$VCMPR@k$ is defined as the mean over nodes i of  $ VCMPR_{i}(k)= \frac{t_{i}(k)}{\min(r_{i},k)}$ with $ r_{i} $ is the number of edges deleted from the test graph to the train graph.
+\section{Remarks on VCMPR@k}
+$VCMPR@k$ is defined as the mean over nodes i of  $ VCMPR_{i}(k)= \frac{t_{i}(k)}{\min(r_{i},k)}$ with $ r_{i} $ is the number of edges deleted from the full graph to the train graph.
 For many real-world graphs, nodes degrees follow a power law distribution, a large fraction of nodes may have degree much lower than the mean degree.
 This impacts the quantity $ VCMPR_{i}(k)$ as a node with no incident edge deleted cannot contribute to $VCMPR@k$.
 
@@ -49,9 +49,9 @@ Degrees quantiles for some graphs are given at \href{https://github.com/jean-pie
 and a Julia script in \href{https://github.com/jean-pierreBoth/linkauc/tree/master/Degrees}{\color{blue}Degrees/e\_vcmpr.jl}
 computes expectations over quantiles degrees and shows we have 12\% of nodes that do not contribute for the Blog graph and 39\% for the Amazon graph.
 
-A related question concerns the sampling of nodes to compute $VCMPR@k$. Edge deletion impact preferentially higher degrees nodes.
-So should we not sample nodes according to their degrees. Our tests showed that for the Blog graph non uniform sampling makes
-$VCMPR@k$ go from 0.05 to 0.11 in our NodeSketch \citep{Yang2019nodesketch} implementation and had no impact on the Amazon graph.
+A related question concerns the sampling of nodes to compute $VCMPR@k$. Edge deletion impacts preferentially higher degrees nodes.
+So should we not sample nodes according to their degrees?. Our tests showed that for the Blog graph non uniform sampling makes
+$VCMPR@k$ go from 0.05 to 0.11 in our NodeSketch \citep{Yang2019nodesketch} implementation but had no impact on the Amazon graph.
 In these cases the impact is small but leaves some questions open .
 Inspired by the paper we propose the following metric.
 
