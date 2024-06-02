@@ -12,4 +12,4 @@ We provide here some comments and simulations related to the *vmpcr* precision e
 
 We point to some problems in the definition and propose a centric Auc to understand and mitigate the discrepancy between centric and global Auc estimators.
 
-The Degrees directory contains degrees quantiles for some graphs. A Julia script provides estimates of the number of nodes with no edges deleted in tests, depending on edge deletion probability, $k$.  
+The Degrees directory contains degrees quantiles for some graphs. A Julia script provides estimates of the number of nodes with no edges deleted in tests, depending on edge deletion probability $p$ and degrees.  
