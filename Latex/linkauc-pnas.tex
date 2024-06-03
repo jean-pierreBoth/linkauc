@@ -49,9 +49,8 @@ and a Julia script in \href{https://github.com/jean-pierreBoth/linkauc/tree/mast
 computes expectations over quantiles degrees and shows we have respectiveley for the Blog, Amazon, Dblp graphs, 12\%, 39\% and 41\% of nodes that do not contribute.
 
 A related question concerns the sampling of nodes to compute $VCMPR@k$. Edge deletion impacts preferentially higher degrees nodes.
-So should we not sample nodes according to their degrees as we must avoid the nodes that cannot contribute?. Our tests showed that for the Blog graph non uniform sampling makes
-$VCMPR@k$ go from 0.05 to 0.11 in our NodeSketch \citep{Yang2019nodesketch} implementation but had no impact on the Amazon graph.
-In these cases the impact is small but leaves the question open. Also is it the centric aspect or the precision that cause the gap with global Auc?
+So should we not sample nodes according to their degrees as we must avoid the nodes that cannot contribute?.
+Our tests did not show large imapct on the Blog and Amazon graphs but leaves the question open. Also is it the centric aspect or the precision that cause the gap with global Auc?
 Inspired by the paper we propose the following metric.
 
 \section{A centric AUC}
