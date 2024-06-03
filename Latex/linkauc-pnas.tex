@@ -43,14 +43,14 @@ This impacts the quantity $ VCMPR_{i}(k)$ as a node with no incident edge delete
 
 With an edge deletion probability $p$ of 0.2, on average only nodes of degree greater or equal than 5 can contribute.
 Precisely the binomial distribution implies that nodes of degree less than 4 will contribute 0 with probability at least 0.41.
-For the Blog graph,  degrees quantiles of the Blog and Amazon graph show we can expect around 10\% of nodes to have zero contribution for the first graph,
-and around 50\% for the second.
+Degrees quantiles of the Blog, Amazon and Dblp graph show we can expect around 10\% of nodes to have zero contribution for the first graph,
+and around 50\% for the second and third.
 Degrees quantiles for some graphs are given at \href{https://github.com/jean-pierreBoth/linkauc/tree/master/Degrees}{\color{blue}Degrees}
 and a Julia script in \href{https://github.com/jean-pierreBoth/linkauc/tree/master/Degrees}{\color{blue}Degrees/e\_vcmpr.jl}
-computes expectations over quantiles degrees and shows we have 12\% of nodes that do not contribute for the Blog graph and 39\% for the Amazon graph.
+computes expectations over quantiles degrees and shows we have respectiveley for the Blog, Amazon, Dblp graph, 12\%, 39\% and 41\% of nodes that do not contribute.
 
 A related question concerns the sampling of nodes to compute $VCMPR@k$. Edge deletion impacts preferentially higher degrees nodes.
-So should we not sample nodes according to their degrees?. Our tests showed that for the Blog graph non uniform sampling makes
+So should we not sample nodes according to their degrees as we must avoid the nodes that cannot contribute?. Our tests showed that for the Blog graph non uniform sampling makes
 $VCMPR@k$ go from 0.05 to 0.11 in our NodeSketch \citep{Yang2019nodesketch} implementation but had no impact on the Amazon graph.
 In these cases the impact is small but leaves some questions open .
 Inspired by the paper we propose the following metric.
