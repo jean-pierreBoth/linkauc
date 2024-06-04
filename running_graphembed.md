@@ -1,10 +1,9 @@
 Run graphembed on any moder Linux systems
 
 ```bash
-wget https://github.com/jianshu93/graphembed/releases/download/v0.1.1/graphembed_Linux_x86-64_v0.1.0.zip
-unzip graphembed_Linux_x86-64_v0.1.0.zip
+wget https://github.com/jianshu93/graphembed/releases/download/v0.1.1/graphembed_Linux_x86-64_v0.1.1.zip
+unzip graphembed_Linux_x86-64_v0.1.1.zip
 chmod a+x graphembed
-    
 wget https://github.com/jianshu93/graphembed/releases/download/v0.1.1/BlogCatalog.txt
     
 ### use HOPE method
