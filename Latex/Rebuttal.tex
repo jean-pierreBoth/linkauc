@@ -1,0 +1,41 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%Link AUC manuscript%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass{article}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{authblk}
+\usepackage{numprint}
+\usepackage{siunitx}
+%------------------------------------------------------------------------------
+%  syles defined in linkauc.sty
+\usepackage{625333_0_supp_latex_10774581_sbxt8w}
+% ----------------------------------------------------------------------
+
+
+\bibliographystyle{pnas2009}
+
+\title{Response to reviewers's comments}
+
+\date{June 2024}
+
+\begin{document}
+
+\maketitle
+
+Menand and Seshradhi have noted that your Letter assumes that d_i 
+is the degree of the original graph, but actually d_i is the degree 
+of node i in the test graph and thus exactly the number of removed 
+edges incident to vertex i. They do not measure/consider the training 
+edges in the measurement, either in the numerator or denominator of the VCMPR. 
+The authors concede that this definition is not as clear in the text as it could be.
+
+\textbf{Response}: We want to thank the authors for pointed out that our definition for VCMPR is not clear.
+We now make it clear in the main text that $d_i$ is the degree 
+of node i in the test graph (the number of removed 
+edges incident to vertex i), but not the orginal graph. 
+
+
+\bibliography{625333_0_supp_latex_10774582_sbxt8w}
+\end{document}
