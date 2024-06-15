@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-%Link AUC manuscript%
+%Link AUC rebuttal%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \documentclass{article}
 \usepackage{xcolor}
@@ -15,7 +15,7 @@
 
 \bibliographystyle{pnas2009}
 
-\title{Response to reviewers's comments}
+\title{Response to reviewers' comments}
 \author[1]{Jianshu Zhao}
 \author[2,*]{Jean, Pierre Both}
 \affil[1]{Center for Bioinformatics and Computational Genomics, Georgia Institute of Technology, Atlanta, Georgia, USA}
@@ -37,14 +37,13 @@ We now make it clear in the main text that $d_i$ is the degree
 of node i in the test graph (the number of removed 
 edges incident to vertex i), but not the orginal graph. The changes are also shown below:}\\
 
-\textcolor{red}{$VCMPR@k$ is defined as the mean over nodes i of  $ VCMPR_{i}(k)= \frac{t_{i}(k)}{\min(r_{i},k)}$ with $ r_{i} $ is the number of edges deleted from the full graph to the train graph.
-For many real-world graphs, nodes degrees follow a power law distribution, a large fraction of nodes may have degree much lower than the mean degree.
-This impacts the quantity $ VCMPR_{i}(k)$ as a node with no edge deleted cannot contribute to $VCMPR@k$ for a given deletion probability $p$.}\\
+\textcolor{red}{$VCMPR@k$ is defined as the mean over nodes i of  $ VCMPR_{i}(k)= \frac{t_{i}(k)}{\min(r_{i},k)}$ with $ r_{i} $ is the number of edges deleted from the full graph to the train graph. For many real-world graphs, nodes degrees follow a power law distribution, a large fraction of nodes may have degree much lower than the mean degree.
+This impacts the quantity $ VCMPR_{i}(k)$ as a node with no edge deleted cannot contribute to $VCMPR@k$ for a given deletion probability $p$.} \\
 
 
-\textcolor{blue}{Accordingly, we derive the upper bound of VCPMR@k with this updated information about $d_i$.  Our software \href{https://github.com/jean-pierreBoth/graphembed}{\color{blue}graphembed} was also modified. 
-You can run the software following the code example \href{https://github.com/jean-pierreBoth/linkauc/blob/master/running_graphembed.md}{\color{blue}here}.
-Updated results in our original version is also attached:}\\
+\textcolor{blue}{Accordingly, a large fraction of nodes may have degree much lower than the mean degree.
+This impacts $VCMPR@k$  as $VCMPR_{i}(k)$ is undefined for nodes with no edge deleted. Our software \href{https://github.com/jean-pierreBoth/graphembed}{\color{blue}graphembed} was also modified to compute $VCMPR@k$ based on test graph (deleted edges). 
+You can run the software following the code example \href{https://github.com/jean-pierreBoth/linkauc/blob/master/running_graphembed.md}{\color{blue}here}.Updated results in our original version is also attached:} \\
 
 \textcolor{red}{
 \begin{tabular*}{\textwidth}[]{p{1.8cm}@{\extracolsep\fill}ccccccc}
@@ -54,7 +53,7 @@ Updated results in our original version is also attached:}\\
     \multicolumn{5}{l}{A. Sketching results. Parameters given in a triplet: dimension, nbhops, decay}\\
     Blog   & 1000,5,0.5 & $0.0437 \pm \num{3.1E-4}$ & $0.681 \pm \num{5.9E-3}$ & $0.93 \pm \num{1.2E-2}$ \\
     Amazon & 1000,5,0.5 & $0.5418 \pm \num{1.3E-2}$ & $0.961 \pm \num{4E-3}$    & $ 0.978 \pm \num{3.2E-4}$ \\
-    Dblp   & 1000,5,0.5 & $0.5713 \num{1.35E-2}$ & $0.918 \pm \num{6E-3}$    & $ 0.901 \pm \num{6.6E-4}$ \\
+    Dblp   & 1000,5,0.5 & $0.5713 \num{1.35E-2}$ & $0.9048 \pm \num{6.5E-3}$    & $ 0.9148 \pm \num{6.6E-4}$ \\
     Dblp   & 400,4,0.4  & $0.5882 \pm \num{1.31E-2}$ & $0.94 \pm \num{5.1E-3}$   & $ 0.961 \pm \num{4.4E-4}$ \\
     \midrule
     \multicolumn{5}{l}{B. Hope embedding. Parameters given in a couple: dimension, nb iterations}\\
